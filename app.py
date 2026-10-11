@@ -267,7 +267,9 @@ def calculate(orders, afters, config_df, soft_fee, default_fee, default_tax, ext
     orders['履约费'] = orders['商品标题'].map(fee_map).fillna(default_fee)
     orders['履约成本'] = orders['是否已发货'].astype(int) * orders['履约费']
     orders['税率'] = orders['商品标题'].map(tax_map).fillna(default_tax)
-    orders['税费'] = orders['计算基数'].clip(lower=0) * orders['税率']
+    
+    # 【修改点】税费按照退款后实收计算，且最低为0（避免退款比原价还高导致负数税费）
+    orders['税费'] = orders['退款后实收'].clip(lower=0) * orders['税率']
 
     # 额外费用（每单固定扣，A 方案）
     extra_fee_per_order = sum(extra_fees.values()) if extra_fees else 0.0
