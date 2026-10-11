@@ -83,7 +83,7 @@ with st.sidebar:
     edited_params = st.data_editor(
         st.session_state.params_df,
         num_rows="dynamic",
-        use_container_width=True,
+        width='stretch',
         hide_index=True,
         column_config={
             "参数名称": st.column_config.TextColumn("参数名称", width="medium"),
@@ -144,7 +144,7 @@ if config_file is not None:
             st.error("❌ 配置表必须包含「商品标题」和「商品成本」两列！")
         else:
             st.success(f"✅ 配置表已加载，共 {len(config_df)} 条商品")
-            st.dataframe(config_df, use_container_width=True)
+            st.dataframe(config_df, width='stretch')
             st.session_state.config_df = config_df
     except Exception as e:
         st.error(f"❌ 配置表读取失败：{e}")
@@ -381,10 +381,10 @@ if st.session_state.result is not None:
     col_b.metric("总净利率", f"{st.session_state.total_margin:.2f}%")
 
     st.markdown("### 🏬 按店铺汇总")
-    st.dataframe(st.session_state.shop_summary, use_container_width=True)
+    st.dataframe(st.session_state.shop_summary, width='stretch')
 
     st.markdown("### 🛍️ 按店铺 + 商品汇总")
-    st.dataframe(st.session_state.result, use_container_width=True)
+    st.dataframe(st.session_state.result, width='stretch')
 
     # ===== 图表分析区 =====
     st.markdown("---")
@@ -420,7 +420,7 @@ if st.session_state.result is not None:
         top['净利润_num'] = pd.to_numeric(top['净利润'], errors='coerce').fillna(0)
         top['标签'] = top['店铺'].astype(str) + " | " + top['商品标题'].astype(str)
         chart_df = top.set_index('标签')[['净利润_num']].rename(columns={'净利润_num': '净利润'})
-        # 【修改点】将排序改为降序，使利润最高的显示在最左边
+        # 降序，使利润最高的显示在最左边
         chart_df = chart_df.sort_values('净利润', ascending=False)
         st.bar_chart(chart_df)
         st.caption("横条越长代表这个商品净利润越高；如果是负数，说明这个商品在亏钱。从左到右利润由高到低排列。")
@@ -436,7 +436,7 @@ if st.session_state.result is not None:
         st.bar_chart(refund.set_index('店铺')[['退款率(%)']])
         st.dataframe(refund[['店铺', '计算基数', '退款金额', '退款率(%)']].rename(
             columns={'计算基数': '买家应付货款', '退款金额': '退款总额'}
-        ), use_container_width=True)
+        ), width='stretch')
 
     # ===== 导出 Excel =====
     def to_excel_with_style(df_result, df_shop, df_orders):
